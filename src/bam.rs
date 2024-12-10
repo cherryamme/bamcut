@@ -13,6 +13,8 @@ use std::path::Path;
 use std::time::Instant;
 use std::io::Write;
 
+
+#[derive(Debug, Clone)]
 struct Region {
     chrom: String,
     start: i32,
@@ -92,6 +94,7 @@ pub fn process_bam(file: String, outfile: String, region: String) {
     let start_time = Instant::now();
     let mut writer = get_writer(outfile);
     let mut record_count = 0;
+    let mut cut_record_count = 0;
     // 解析需要提取的region
     let region = Region::from_str(&region).unwrap();
     // 加载bam文件
@@ -104,17 +107,20 @@ pub fn process_bam(file: String, outfile: String, region: String) {
         .unwrap();
     // 循环处理bam文件中的每一行
     for read in bam.records() {
+        record_count += 1;
         if let Some(recordinfo) = cut_region_reads(&read.unwrap(), &region){
             // debug!("read cigar: {:?}", &read.unwrap().pos());
+            cut_record_count += 1;
             writer_recordinfo(recordinfo, &mut writer);
         }
 
     }
     info!(
-        "Process bam: {:?} finished, total time: {:?}",
+        "Process bam: {:?} finished",
         file,
-        start_time.elapsed()
-    );
+        );
+        info!("cut {:?}/{:?} records in {:?}", cut_record_count, record_count, region);
+    info!("total time:{:?} ", start_time.elapsed());
 }
 
 fn get_writer(outfile: String) -> BufWriter<GzEncoder<File>> {
