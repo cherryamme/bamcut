@@ -23,4 +23,7 @@ pub struct Args {
     /// The name of outdir
     #[arg(short, long, default_value = "bamcut.fq.gz")]
     pub outfile: String,
+    /// The maximum number of reads to cut in the region
+    #[arg(short, long)]
+    pub max_reads: Option<usize>,
 }

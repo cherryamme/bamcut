@@ -90,7 +90,7 @@ pub fn cut_region_reads(record: &Record, region: &Region) -> Option<RecordInfo> 
 //     debug!("i: {:?}", i);
 // }
 
-pub fn process_bam(file: String, outfile: String, region: String) {
+pub fn process_bam(file: String, outfile: String, region: String, max_reads: Option<usize>) {
     let start_time = Instant::now();
     let mut writer = get_writer(outfile);
     let mut record_count = 0;
@@ -107,6 +107,11 @@ pub fn process_bam(file: String, outfile: String, region: String) {
         .unwrap();
     // 循环处理bam文件中的每一行
     for read in bam.records() {
+        if let Some(max) = max_reads {
+            if cut_record_count >= max {
+                break;
+            }
+        }
         record_count += 1;
         if let Some(recordinfo) = cut_region_reads(&read.unwrap(), &region){
             // debug!("read cigar: {:?}", &read.unwrap().pos());

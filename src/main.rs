@@ -16,5 +16,5 @@ fn main() {
 
     // let file= "/home/jiangchen/project/Jolish/example/example.fq.bam".to_string();
     // let outfile= "/home/jiangchen/project/Jolish/example/example_extract.fq.gz".to_string();
-    process_bam(args.inputs, args.outfile,args.region);
+    process_bam(args.inputs, args.outfile,args.region, args.max_reads);
 }
